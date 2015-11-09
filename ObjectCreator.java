@@ -1,5 +1,7 @@
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Vector;
 
 public class ObjectCreator {
 
@@ -34,17 +36,15 @@ public class ObjectCreator {
                 break;
             case "2":
                 object = createSimpleObject();
-                System.out.println("This does nothing yet");
                 break;
             case "3":
                 object = createSimplePrimitiveArray();
                 break;
             case "4":
-                System.out.println("This does nothing yet");
+                object = createSimpleObjectArray();
                 break;
             case "5":
-                //object = createObjectsCollectionObject();
-                System.out.println("This does nothing yet");
+                object = createObjectsCollectionObject();
                 break;
             default:
                 System.out.println("Please enter a number from 1 to 5.");
@@ -94,28 +94,28 @@ public class ObjectCreator {
         String input;
 
         System.out.println("Getting user input for object 1");
-        System.out.println("\tEnter an Integer for A: ");
+        System.out.print("\tEnter an Integer for A: ");
         input = objScan.nextLine();
         a.setA(Integer.parseInt(input));
 
-        System.out.println("\tEnter an Integer for B: ");
+        System.out.print("\tEnter an Integer for B: ");
         input = objScan.nextLine();
         a.setB(Integer.parseInt(input));
 
-        System.out.println("\tEnter an Integer for C: ");
+        System.out.print("\tEnter an Integer for C: ");
         input = objScan.nextLine();
         a.setC(Integer.parseInt(input));
 
         System.out.println("Getting user input for object 2");
-        System.out.println("\tEnter an Integer for A: ");
+        System.out.print("\tEnter an Integer for A: ");
         input = objScan.nextLine();
         b.setA(Integer.parseInt(input));
 
-        System.out.println("\tEnter an Integer for B: ");
+        System.out.print("\tEnter an Integer for B: ");
         input = objScan.nextLine();
         b.setB(Integer.parseInt(input));
 
-        System.out.println("\tEnter an Integer for C: ");
+        System.out.print("\tEnter an Integer for C: ");
         input = objScan.nextLine();
         b.setC(Integer.parseInt(input));
 
@@ -146,37 +146,89 @@ public class ObjectCreator {
 
         return arrayPrimitives;
     }
-//  private ObjectsCollectionObject createObjectsCollectionObject()
-//  {
-//
-//      Vector<Object> list = new Vector<Object>();
-//
-//      int collectionSize = GUI.getIntInput(......);
-//
-//      for(int i = 0; i < collectionSize; i++) {
-//          list.add(createObject());
-//      }
-//
-//      return new ObjectsCOllectionObject(list);
-//
-//      }
-//  }
 
-    //an object that contains references to other objects. Of course,
-    //these other objects must also be created at the same time, and their primitive
-    // instance variables must be
-    //settable by the user. our program must also be able to deal with circular references
-    //(i.e. objects connected in a graph).
+    private ArraySimpleObjects createSimpleObjectArray()
+    {
+        //todo
+        Scanner ArrayObjectScan = new Scanner(System.in);
+        String input;
+
+        System.out.println("Creating an array of Primitives Objects");
+        System.out.println("Creating three primitive objects");
+
+        Primitives a = new Primitives();
+        Primitives b = new Primitives();
+        Primitives c = new Primitives();
 
 
-    //an object that contains an array of primitives.
-    // Allow the user to set the values for the array elements to arbitrary values.
+        //setting a
+        System.out.println("Getting input for object 1");
+        System.out.print("\tEnter an Integer for A: ");
+        input = ArrayObjectScan.nextLine();
+        a.setA(Integer.parseInt(input));
 
-    //an object that contains an array of object references.
-    // The other objects must also be created at the same time.
+        System.out.print("\tEnter an Integer for B: ");
+        input = ArrayObjectScan.nextLine();
+        a.setB(Integer.parseInt(input));
 
-    //an object that uses an instance of one of Java's collection classes to
-    // refer to several other objects. These objects, too, must be created at the same time.
+        System.out.print("\tEnter an Integer for C: ");
+        input = ArrayObjectScan.nextLine();
+        a.setC(Integer.parseInt(input));
 
+        //setting b
+        System.out.println("Getting input for object 2");
+        System.out.print("\tEnter an Integer for A: ");
+        input = ArrayObjectScan.nextLine();
+        b.setA(Integer.parseInt(input));
+
+        System.out.print("\tEnter an Integer for B: ");
+        input = ArrayObjectScan.nextLine();
+        b.setB(Integer.parseInt(input));
+
+        System.out.print("\tEnter an Integer for C: ");
+        input = ArrayObjectScan.nextLine();
+        b.setC(Integer.parseInt(input));
+
+        //setting c
+        System.out.println("Getting input for object 3");
+        System.out.print("\tEnter an Integer for A: ");
+        input = ArrayObjectScan.nextLine();
+        c.setA(Integer.parseInt(input));
+
+        System.out.print("\tEnter an Integer for B: ");
+        input = ArrayObjectScan.nextLine();
+        c.setB(Integer.parseInt(input));
+
+        System.out.print("\tEnter an Integer for C: ");
+        input = ArrayObjectScan.nextLine();
+        c.setC(Integer.parseInt(input));
+
+        ArraySimpleObjects arraySimpleObjects = new ArraySimpleObjects(a,b,c);
+        return arraySimpleObjects;
+    }
+  private ObjectsCollectionObject createObjectsCollectionObject()
+  {
+
+      ArrayList<Primitives> list = new ArrayList<Primitives>();
+      Scanner collectionScan = new Scanner(System.in);
+      String input;
+
+      int collectionSize;
+
+      System.out.println("How big do you want the collection to be?");
+      input = collectionScan.nextLine();
+
+      collectionSize = Integer.parseInt(input);
+
+      for(int i = 0; i < collectionSize; i++) {
+          Primitives obj = createSimplePrimitive();
+          list.add(obj);
+      }
+
+      ObjectsCollectionObject objectsCollectionObject = new ObjectsCollectionObject(list);
+
+      return objectsCollectionObject;
+
+  }
 
 }
