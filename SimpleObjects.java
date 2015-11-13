@@ -17,4 +17,14 @@ public class SimpleObjects {
         this.primObjB = b;
     }
 
+    public Primitives getPrimObjA()
+    {
+        return primObjA;
+    }
+
+    public Primitives getPrimObjB()
+    {
+        return primObjB;
+    }
+
 }
