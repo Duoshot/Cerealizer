@@ -1,6 +1,8 @@
+import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.io.IOException;
+import java.io.File;
 
 public class Network
 {
@@ -8,22 +10,37 @@ public class Network
   private int port = 4321;
   private String ip = "localhost";
 
-  public void send(String message)
+  public void send(File sendFile) throws IOException
   {
-    if(socket == null)
-      connect();
+    if(socket == null || socket.isClosed())
+    {
+        socket = new Socket(ip, port);
+
+    }
+      //connect();
 
     if(socket != null && socket.isConnected())
     {
         try
         {
-         OutputStream outstream = socket.getOutputStream();
-          outstream.write(message.getBytes());
-          outstream.flush();
+            OutputStream outstream = socket.getOutputStream();
+            FileInputStream fileInputStream = new FileInputStream(sendFile);
+            byte[] buffer = new byte[1000000];
+            int bytesRead = 0;
+
+            while((bytesRead = fileInputStream.read(buffer)) > 0)
+            {
+                outstream.write(buffer,0,bytesRead);
+            }
+
+            fileInputStream.close();
+            socket.close();
+            System.out.println("Transfer complete");
+
         }
     catch(IOException e)
     {
-      System.out.println(e.getMessage());
+      System.out.println("Something is closed" + e.getMessage());
     }
   }
     else
@@ -33,7 +50,7 @@ public class Network
   public void connect()
   {
 
-	  Sender sender = new Sender();
+    Sender sender = new Sender();
     try
     {
       socket = new Socket(ip, port);
@@ -49,8 +66,7 @@ public class Network
 
   public void disconnect() throws IOException
   {
-    //socket.close() or something like that
-	  socket.close();
+    socket.close();
   }
 
   public void setIP(String ip)
@@ -59,6 +75,6 @@ public class Network
   }
   public void setPort(int port)
   {
-	  this.port = port;
+    this.port = port;
   }
 }

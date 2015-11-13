@@ -3,6 +3,9 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.output.Format;
 
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import org.jdom2.*;
@@ -12,6 +15,8 @@ public class Sender
   private static Network network = null;
   private static Serializer serializer = null;
   private static ObjectCreator objCreator = null;
+
+  private static int fileCount = 0;
 
   public static boolean connected;
 
@@ -26,11 +31,8 @@ public class Sender
         if(!connected)
           continue;
         Document doc = serializer.serialize(obj);
-        String XMLString = XMLtoString(doc);
-
-
-
-        //network.send(XMLString);
+        File sendFile = XMLtoFile(doc);
+        network.send(sendFile);
       }
       exit();
   }
@@ -49,15 +51,19 @@ public class Sender
     }
   }
 
-  public static String XMLtoString(Document doc) throws IOException {
+  public static File XMLtoFile(Document doc) throws IOException {
     XMLOutputter xmlOutput = new XMLOutputter();
-    //return xmlOutput.outputString();
 
     xmlOutput.setFormat(Format.getPrettyFormat());
-    xmlOutput.output(doc, System.out);
+    File sendFile = new File("sentFile.xml");
+    BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(sendFile));
 
-    return xmlOutput.toString();
+    xmlOutput.output(doc, bufferedWriter);
+    bufferedWriter.close();
+
+    return sendFile;
   }
+
 
   public static void exit() throws IOException
   {
