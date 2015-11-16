@@ -29,7 +29,7 @@ public class Serializer
   public Serializer()
   {}
 
-  public Document serialize(Object object)
+  public Document serialize(Object object) throws NoSuchMethodException, InvocationTargetException
   {
     if(!serializedObjects.contains(object))
     {
@@ -59,23 +59,26 @@ public class Serializer
         if(c.getComponentType().isPrimitive()) {
           for (int i = 0; i < Array.getLength(array); i++) {
             Element value = new Element("value");
-            objectElement.addContent(value);
+
             value.setText(Array.get(array, i).toString());
+            objectElement.addContent(value);
           }
         }
-        else{
+
+        else
+        {
           for(int j=0; j < Array.getLength(array); j++){
-            Element ref = new Element("referenceHigh");
+            Element ref = new Element("reference");
             id = getID(Array.get(array, j));
             if(id != -1){
               ref.setText(id.toString());
               objectElement.addContent(ref);
             }
 
-            for(int k = 0; k < Array.getLength(array); k++){
+            for(int k = 0; k < Array.getLength(array); k++)
+            {
               serialize(Array.get(array, k));
             }
-
 
           }
         }
@@ -103,13 +106,15 @@ public class Serializer
     return doc;
   }
 
-  private ArrayList<Element> serializeFields(Field[] fields, Object object){
+  private ArrayList<Element> serializeFields(Field[] fields, Object object) throws NoSuchMethodException, InvocationTargetException {
       ArrayList<Element> elements = new ArrayList<Element>();
-      for(int i = 0; i < fields.length; i++){ // Transient and Final Fields DO NOT need to be serialized, just skip them
+      for(int i = 0; i < fields.length; i++)
+      { // Transient and Final Fields DO NOT need to be serialized, just skip them
           if(Modifier.isTransient(fields[i].getModifiers()) || Modifier.isFinal(fields[i].getModifiers()))
             continue;
 
-          try{
+          try
+          {
 
             Field field = fields[i];
             if(!field.isAccessible())
@@ -118,14 +123,23 @@ public class Serializer
             element.setAttribute(new Attribute("name", field.getName()));
             element.setAttribute(new Attribute("declaringclass", object.getClass().getName()));
 
-            if(field.getType().isPrimitive()){ // Primitive Types
-              System.out.println("This is primitive");
+            if(field.getType().isPrimitive())
+            { // Primitive Types
               Element value = new Element("value");
               element.addContent(value);
               value.setText(field.get(object).toString());
+            }
 
 
-            }else{ // Object Types. If the field reference is another object, that should also be serialized. Call recursively!
+            else if(field.getType().isAssignableFrom(ArrayList.class))  //type.isAssignableFrom(ArrayList.class)
+            {
+
+              serializeCollections(object, field, root);
+            }
+
+
+            else
+            { // Object Types. If the field reference is another object, that should also be serialized. Call recursively!
               Integer id = getID(field.get(object));
               Element reference = new Element("reference");
               element.addContent(reference);
@@ -142,6 +156,29 @@ public class Serializer
 
       }
     return elements;
+  }
+
+  public void serializeCollections(Object obj, Field objField, Element root) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    Method get = ArrayList.class.getDeclaredMethod("get", new Class[]{int.class});
+    Method size = ArrayList.class.getDeclaredMethod("size", new Class[]{});
+
+
+    int length = (Integer)(size.invoke(objField.get(obj)));
+
+    for(int i = 0; i < length; i++)
+    {
+      Integer id = getID(objField.get(obj));
+      Element reference = new Element("reference");
+      objField.setAccessible(true);
+
+      Element element = new Element("field");
+      element.addContent(reference);
+      reference.setText(id.toString());
+      Object objA = get.invoke(objField.get(obj), i);
+      serialize(objA);
+
+    }
+
   }
 
   private int getID(Object object){
